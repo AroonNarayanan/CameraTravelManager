@@ -1,0 +1,16 @@
+﻿<UserControl
+    x:Class="CameraTravelManager.Controls.AddBattery"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CameraTravelManager.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Height="96">
+
+    <RelativePanel>
+        <Slider x:Name="BatteryLevelSlider" RelativePanel.AlignTopWithPanel="True" RelativePanel.AlignLeftWithPanel="True" RelativePanel.AlignRightWithPanel="True" Header="Battery Level"></Slider>
+        <Button x:Name="AddBatteryButton" Click="AddBatteryClick" Content="Add Battery" RelativePanel.Below="BatteryLevelSlider" Margin="20,0,0,0" RelativePanel.AlignRightWithPanel="True"/>
+        <TextBox x:Name="BatteryLabelBox" RelativePanel.Below="BatteryLevelSlider" RelativePanel.AlignLeftWithPanel="True" RelativePanel.LeftOf="AddBatteryButton" PlaceholderText="Battery Label"/>
+    </RelativePanel>
+</UserControl>
