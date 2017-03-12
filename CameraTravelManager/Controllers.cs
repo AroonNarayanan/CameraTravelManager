@@ -8,21 +8,21 @@ namespace CameraTravelManager
         public static Battery CreateNewBattery()
         {
             Battery newBattery = new Battery();
-            saveBattery(newBattery);
+            addBattery(newBattery);
             return newBattery;
         }
 
         public static Battery CreateNewBattery(string label)
         {
             Battery newBattery = new Battery(label);
-            saveBattery(newBattery);
+            addBattery(newBattery);
             return newBattery;
         }
 
         public static Battery CreateNewBattery(string label, double batteryLevel)
         {
             Battery newBattery = new Battery(label, batteryLevel);
-            saveBattery(newBattery);
+            addBattery(newBattery);
             return newBattery;
         }
 
@@ -39,7 +39,7 @@ namespace CameraTravelManager
             }
         }
 
-        public static void saveBattery(Battery battery)
+        public static void addBattery(Battery battery)
         {
             var remoteSettings = Windows.Storage.ApplicationData.Current.RoamingSettings;
             var serializedBatteryList = (string)remoteSettings.Values["batteries"];
@@ -52,7 +52,7 @@ namespace CameraTravelManager
             remoteSettings.Values["batteries"] = JsonConvert.SerializeObject(batteryList);
         }
 
-        public static void saveBattery(ObservableCollection<Battery> batteryList)
+        public static void updateBatteryList(ObservableCollection<Battery> batteryList)
         {
             var remoteSettings = Windows.Storage.ApplicationData.Current.RoamingSettings;
             remoteSettings.Values["batteries"] = JsonConvert.SerializeObject(batteryList);

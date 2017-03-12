@@ -6,40 +6,52 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
+    <Page.Resources>
+        <local:DoubleToPercentage x:Key="DoubleToPercentage"/>
+    </Page.Resources>
 
 
     <Page.BottomAppBar>
         <CommandBar>
-            <AppBarButton Label="Add" Icon="Add">
+            <AppBarButton x:Name="AddButton" Label="Add" Icon="Add">
                 <AppBarButton.Flyout>
                     <MenuFlyout>
-                        <MenuFlyoutItem Text="New Battery" Click="ShowBatteryFlyout"></MenuFlyoutItem>
+                        <MenuFlyoutItem Text="New Battery" Click="ShowNewBatteryFlyout"></MenuFlyoutItem>
                         <MenuFlyoutItem Text="New SD Card"></MenuFlyoutItem>
                     </MenuFlyout>
                 </AppBarButton.Flyout>
             </AppBarButton>
+            <AppBarButton x:Name="EmptyButton" Label="Empty Battery" Click="EmptySelectedBatteries" Visibility="Collapsed">
+                <AppBarButton.Icon>
+                    <FontIcon Glyph="&#xE850;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarButton x:Name="DeleteButton" Label="Delete" Icon="Delete" Click="DeleteSelectedBatteries" Visibility="Collapsed"></AppBarButton>
+            <AppBarButton Icon="List" Label="Select" Click="ToggleSelection"></AppBarButton>
         </CommandBar>
     </Page.BottomAppBar>
 
     <Pivot Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <PivotItem Header="Batteries">
             <ListView x:Name="batteryListView" SelectionMode="None">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <RelativePanel>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <RelativePanel>
                             <TextBlock x:Name="BatteryItemLabel" Text="Battery" RelativePanel.AlignTopWithPanel="True" Style="{StaticResource SubtitleTextBlockStyle}" RelativePanel.AlignLeftWithPanel="True"></TextBlock>
-                                <TextBlock x:Name="BatteryItemName" Text="{Binding label}" Style="{StaticResource SubtitleTextBlockStyle}" Margin="5,0,0,0" RelativePanel.AlignTopWithPanel="True" RelativePanel.RightOf="BatteryItemLabel"/>
+                            <TextBlock x:Name="BatteryItemName" Text="{Binding label}" Style="{StaticResource SubtitleTextBlockStyle}" Margin="5,0,0,0" RelativePanel.AlignTopWithPanel="True" RelativePanel.RightOf="BatteryItemLabel"/>
                             <TextBlock x:Name="BatteryItemIcon" Text="&#x1f50b;" FontFamily="Segoe UI Symbol" RelativePanel.AlignLeftWithPanel="True" RelativePanel.Below="BatteryItemLabel" FontSize="45" Margin="0,0,20,0"></TextBlock>
-                                <Slider x:Name="BatteryItemLevel" ValueChanged="BatteryLevelChanged" Value="{Binding batteryLevel,Mode=TwoWay}" RelativePanel.AlignRightWithPanel="True" RelativePanel.AlignBottomWithPanel="True" Header="Level" RelativePanel.Below="BatteryItemName" RelativePanel.RightOf="BatteryItemIcon"/>
-                            </RelativePanel>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                    <ListView.ItemContainerStyle>
-                        <Style TargetType="ListViewItem">
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                        </Style>
-                    </ListView.ItemContainerStyle>
-                </ListView>
+                            <ProgressBar x:Name="BatteryItemLevel" Value="{Binding batteryLevel,Mode=TwoWay}" RelativePanel.AlignRightWithPanel="True" RelativePanel.AlignBottomWithPanel="True" RelativePanel.Below="BatteryItemName" RelativePanel.RightOf="BatteryItemIcon"/>
+                            <HyperlinkButton x:Name="BatteryItemEdit" Click="EditBattery" Content="edit" RelativePanel.AlignRightWithPanel="True" Margin="0"></HyperlinkButton>
+                            <TextBlock x:Name="BatteryItemPercentage" Text="{Binding batteryLevel, Converter={StaticResource DoubleToPercentage}}" Margin="0,7,10,0" RelativePanel.LeftOf="BatteryItemEdit"/>
+                        </RelativePanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    </Style>
+                </ListView.ItemContainerStyle>
+            </ListView>
         </PivotItem>
         <PivotItem Header="SD Cards">
             <ListView>

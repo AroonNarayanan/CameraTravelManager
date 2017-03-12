@@ -1,5 +1,8 @@
 ﻿using CameraTravelManager.Controls;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -18,10 +21,10 @@ namespace CameraTravelManager
             refreshBatteryList();
         }
 
-        private async void ShowBatteryFlyout(object sender, RoutedEventArgs e)
+        private async void ShowNewBatteryFlyout(object sender, RoutedEventArgs e)
         {
             var batteryFlyout = new ContentDialog();
-            var batteryContent = new AddBattery();
+            var batteryContent = new AddBattery(null);
             batteryContent.BatteryAdded += delegate (object senderDelegate, EventArgs eDelegate)
             {
                 batteryFlyout.Hide();
@@ -33,12 +36,62 @@ namespace CameraTravelManager
 
         private void refreshBatteryList()
         {
+            //TODO: use binding so we don't need this method
             batteryListView.ItemsSource = BatteryController.GetBatteries();
         }
 
-        private void BatteryLevelChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+        private void ToggleSelection(object sender, RoutedEventArgs e)
         {
-            BatteryController.saveBattery((System.Collections.ObjectModel.ObservableCollection<Battery>)batteryListView.ItemsSource);
+            if (batteryListView.SelectionMode == ListViewSelectionMode.None)
+            {
+                batteryListView.SelectionMode = ListViewSelectionMode.Multiple;
+                DeleteButton.Visibility = Visibility.Visible;
+                EmptyButton.Visibility = Visibility.Visible;
+                AddButton.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                batteryListView.SelectionMode = ListViewSelectionMode.None;
+                DeleteButton.Visibility = Visibility.Collapsed;
+                EmptyButton.Visibility = Visibility.Collapsed;
+                AddButton.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void EmptySelectedBatteries(object sender, RoutedEventArgs e)
+        {
+            foreach (Battery battery in batteryListView.SelectedItems)
+            {
+                battery.batteryLevel = 0;
+            }
+            BatteryController.updateBatteryList((ObservableCollection<Battery>)batteryListView.ItemsSource);
+            refreshBatteryList();
+        }
+
+        private void DeleteSelectedBatteries(object sender, RoutedEventArgs e)
+        {
+            foreach (Battery battery in batteryListView.SelectedItems)
+            {
+                ((ObservableCollection<Battery>)batteryListView.ItemsSource).Remove(battery);
+            }
+            BatteryController.updateBatteryList((ObservableCollection<Battery>)batteryListView.ItemsSource);
+        }
+
+        private async void EditBattery(object sender, RoutedEventArgs e)
+        {
+            var batteryFlyout = new ContentDialog();
+            var batteryContent = new AddBattery((Battery)((HyperlinkButton)sender).DataContext);
+            batteryContent.BatterySaved += delegate (object battery, EventArgs eDelegate)
+            {
+                batteryFlyout.Hide();
+                //TODO: use ID to index instead of label
+                var existingBattery = ((ObservableCollection<Battery>)batteryListView.ItemsSource).FirstOrDefault<Battery>(n => n.label == ((Battery)battery).label);
+                existingBattery.batteryLevel = ((Battery)battery).batteryLevel;
+                BatteryController.updateBatteryList((ObservableCollection<Battery>)batteryListView.ItemsSource);
+                refreshBatteryList();
+            };
+            batteryFlyout.Content = batteryContent;
+            await batteryFlyout.ShowAsync();
         }
     }
 }
